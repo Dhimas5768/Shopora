@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopora - Premium E-Commerce Template</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50:'#EEF2FF',100:'#E0E7FF',200:'#C7D2FE',300:'#A5B4FC',400:'#818CF8',
+              500:'#4F46E5',600:'#4338CA',700:'#3730A3',800:'#312E81',900:'#1E1B4B'
+            },
+            accent: {
+              50:'#FFFBEB',100:'#FEF3C7',200:'#FDE68A',300:'#FCD34D',400:'#FBBF24',
+              500:'#F59E0B',600:'#D97706',700:'#B45309',800:'#92400E',900:'#78350F'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="font-sans bg-white text-gray-900 dark:bg-slate-950 dark:text-gray-100 transition-colors duration-300">
+
+  <!-- ============ LOADING SCREEN ============ -->
+  <div id="loader">
+    <div class="text-center">
+      <div class="loader-spinner mx-auto mb-4"></div>
+      <p class="text-primary-500 font-display font-bold text-xl tracking-tight">Shopora</p>
+    </div>
+  </div>
+
+  <!-- ============ TOAST NOTIFICATION ============ -->
+  <div id="toast" class="toast">
+    <div class="toast-icon">
+      <i data-lucide="check" class="w-5 h-5 text-green-600"></i>
+    </div>
+    <div class="toast-body">
+      <p class="font-semibold text-sm" id="toast-title">Added to Cart</p>
+      <p class="text-xs text-gray-500 dark:text-gray-400" id="toast-msg">Item has been added</p>
+    </div>
+  </div>
+
+  <!-- ============ SEARCH OVERLAY ============ -->
+  <div id="searchOverlay" class="search-overlay">
+    <div class="search-box">
+      <button onclick="toggleSearch()" class="search-close">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <h3 class="font-display font-bold text-lg mb-4">Search Products</h3>
+      <div class="search-input-wrap">
+        <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+        <input type="text" placeholder="Search for products, categories..." class="search-input">
+      </div>
+      <div class="search-tags">
+        <span class="search-tags-label">Popular:</span>
+        <span class="search-tag">Sneakers</span>
+        <span class="search-tag">Watch</span>
+        <span class="search-tag">Dress</span>
+        <span class="search-tag">Headphones</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ QUICK VIEW MODAL ============ -->
+  <div id="quickViewModal" class="modal-overlay">
+    <div class="modal-content">
+      <button onclick="closeQuickView()" class="modal-close">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+      <div class="modal-grid">
+        <div class="modal-image-wrap">
+          <img id="qv-image" src="" alt="" class="modal-image">
+        </div>
+        <div class="modal-info">
+          <span id="qv-badge" class="qv-badge"></span>
+          <h2 id="qv-name" class="font-display font-bold text-2xl mb-2"></h2>
+          <div id="qv-rating" class="flex items-center gap-1 mb-3"></div>
+          <div class="qv-prices">
+            <span id="qv-price" class="text-2xl font-bold text-primary-500"></span>
+            <span id="qv-original" class="text-lg text-gray-400 line-through"></span>
+          </div>
+          <p id="qv-desc" class="qv-desc"></p>
+          <div class="qv-actions">
+            <button onclick="addToCartFromQV()" class="qv-add-btn">
+              <i data-lucide="shopping-cart" class="w-4 h-4"></i> Add to Cart
+            </button>
+            <button id="qv-wishlist" onclick="toggleWishlistQV()" class="qv-wish-btn">
+              <i data-lucide="heart" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MOBILE MENU ============ -->
+  <div id="mobileMenu" class="mobile-menu">
+    <div class="mobile-menu-header">
+      <span class="font-display font-bold text-xl text-primary-500">Shopora</span>
+      <button onclick="toggleMobileMenu()" class="text-gray-500 hover:text-gray-800 dark:hover:text-white">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+    <nav class="mobile-nav">
+      <a href="#home" onclick="toggleMobileMenu()">Home</a>
+      <a href="#categories" onclick="toggleMobileMenu()">Categories</a>
+      <a href="#products" onclick="toggleMobileMenu()">Products</a>
+      <a href="#flash-sale" onclick="toggleMobileMenu()">Flash Sale</a>
+      <a href="#testimonials" onclick="toggleMobileMenu()">Reviews</a>
+      <a href="#newsletter" onclick="toggleMobileMenu()">Newsletter</a>
+    </nav>
+    <div class="mobile-menu-footer">
+      <button class="mobile-signin-btn">Sign In</button>
+    </div>
+  </div>
+  <div id="mobileOverlay" class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+
+  <!-- ============ NAVBAR ============ -->
+  <header id="navbar" class="navbar">
+    <div class="navbar-inner">
+      <a href="#home" class="navbar-logo">
+        <div class="logo-icon">
+          <i data-lucide="shopping-bag" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="font-display font-bold text-xl tracking-tight">Shopora</span>
+      </a>
+
+      <nav class="desktop-nav">
+        <a href="#home">Home</a>
+        <a href="#categories">Categories</a>
+        <a href="#products">Products</a>
+        <a href="#flash-sale">Flash Sale</a>
+        <a href="#testimonials">Reviews</a>
+      </nav>
+
+      <div class="navbar-actions">
+        <button onclick="toggleSearch()" class="nav-icon-btn" title="Search">
+          <i data-lucide="search" class="w-5 h-5"></i>
+        </button>
+        <button onclick="toggleDarkMode()" class="nav-icon-btn" title="Toggle Dark Mode" id="darkModeBtn">
+          <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+          <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+        </button>
+        <button class="nav-icon-btn relative" title="Wishlist">
+          <i data-lucide="heart" class="w-5 h-5"></i>
+          <span class="nav-badge bg-red-500" id="wishlistCount">0</span>
+        </button>
+        <button class="nav-icon-btn relative" title="Cart" id="cartBtn">
+          <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+          <span class="nav-badge bg-primary-500" id="cartCount">0</span>
+        </button>
+        <button onclick="toggleMobileMenu()" class="nav-icon-btn md:hidden">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section id="home" class="hero">
+    <div class="hero-bg">
+      <img src="https://picsum.photos/seed/shopora-hero/1920/1080.jpg" alt="Hero" class="hero-bg-img">
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-deco hero-deco-1"></div>
+    <div class="hero-deco hero-deco-2"></div>
+
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-tag">
+          <span class="hero-tag-dot"></span>
+          <span>Summer Collection 2025 — Up to 50% Off</span>
+        </div>
+        <h1 class="hero-title">
+          Discover Your
+          <span class="hero-title-gradient">Perfect Style</span>
+        </h1>
+        <p class="hero-desc">
+          Explore thousands of premium products from top brands. Fashion, electronics, beauty & more — all in one place.
+        </p>
+        <div class="hero-buttons">
+          <a href="#products" class="btn-primary">
+            Shop Now
+            <i data-lucide="arrow-right" class="w-4 h-4 btn-arrow"></i>
+          </a>
+          <a href="#categories" class="btn-secondary">Browse Categories</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <p class="hero-stat-num">10K+</p>
+            <p class="hero-stat-label">Products</p>
+          </div>
+          <div class="hero-stat">
+            <p class="hero-stat-num">50K+</p>
+            <p class="hero-stat-label">Happy Customers</p>
+          </div>
+          <div class="hero-stat">
+            <p class="hero-stat-num">200+</p>
+            <p class="hero-stat-label">Brands</p>
+          </div>
+          <div class="hero-stat">
+            <p class="hero-stat-num">4.9</p>
+            <p class="hero-stat-label">Rating</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <span class="hero-scroll-text">Scroll</span>
+      <div class="hero-scroll-mouse">
+        <div class="hero-scroll-dot"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURED CATEGORIES ============ -->
+  <section id="categories" class="section-gray">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">Categories</span>
+        <h2 class="section-title">Shop by Category</h2>
+        <p class="section-subtitle">Find exactly what you're looking for in our curated collections</p>
+      </div>
+      <div class="categories-grid">
+        <div class="category-card reveal reveal-delay-1">
+          <div class="cat-icon cat-icon-1">👕</div>
+          <h3 class="cat-name">Fashion</h3>
+          <p class="cat-count">1.2K Items</p>
+        </div>
+        <div class="category-card reveal reveal-delay-2">
+          <div class="cat-icon cat-icon-2">👟</div>
+          <h3 class="cat-name">Shoes</h3>
+          <p class="cat-count">890 Items</p>
+        </div>
+        <div class="category-card reveal reveal-delay-3">
+          <div class="cat-icon cat-icon-3">⌚</div>
+          <h3 class="cat-name">Watches</h3>
+          <p class="cat-count">456 Items</p>
+        </div>
+        <div class="category-card reveal reveal-delay-4">
+          <div class="cat-icon cat-icon-4">🎧</div>
+          <h3 class="cat-name">Electronics</h3>
+          <p class="cat-count">2.1K Items</p>
+        </div>
+        <div class="category-card reveal reveal-delay-1">
+          <div class="cat-icon cat-icon-5">💄</div>
+          <h3 class="cat-name">Beauty</h3>
+          <p class="cat-count">780 Items</p>
+        </div>
+        <div class="category-card reveal reveal-delay-2">
+          <div class="cat-icon cat-icon-6">👜</div>
+          <h3 class="cat-name">Bags</h3>
+          <p class="cat-count">340 Items</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURED PRODUCTS ============ -->
+  <section id="products" class="section-white">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">Our Products</span>
+        <h2 class="section-title">Featured Products</h2>
+        <p class="section-subtitle">Handpicked selections just for you</p>
+      </div>
+
+      <div class="filter-bar reveal">
+        <button onclick="filterProducts('all')" class="filter-btn active">All</button>
+        <button onclick="filterProducts('fashion')" class="filter-btn">Fashion</button>
+        <button onclick="filterProducts('shoes')" class="filter-btn">Shoes</button>
+        <button onclick="filterProducts('electronics')" class="filter-btn">Electronics</button>
+        <button onclick="filterProducts('watches')" class="filter-btn">Watches</button>
+        <button onclick="filterProducts('beauty')" class="filter-btn">Beauty</button>
+        <button onclick="filterProducts('bags')" class="filter-btn">Bags</button>
+      </div>
+
+      <div id="productsGrid" class="products-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============ WHY CHOOSE US ============ -->
+  <section class="section-primary">
+    <div class="primary-deco primary-deco-1"></div>
+    <div class="primary-deco primary-deco-2"></div>
+    <div class="primary-deco primary-deco-3"></div>
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag-light">Why Us</span>
+        <h2 class="section-title-light">Why Choose Shopora?</h2>
+        <p class="section-subtitle-light">We go above and beyond to make your shopping experience exceptional</p>
+      </div>
+      <div class="why-grid">
+        <div class="why-card reveal reveal-delay-1">
+          <div class="why-icon">
+            <i data-lucide="truck" class="w-8 h-8 text-white"></i>
+          </div>
+          <h3 class="why-title">Fast Shipping</h3>
+          <p class="why-desc">Free delivery on orders over $50. Get your items in 2-5 business days.</p>
+        </div>
+        <div class="why-card reveal reveal-delay-2">
+          <div class="why-icon">
+            <i data-lucide="shield-check" class="w-8 h-8 text-white"></i>
+          </div>
+          <h3 class="why-title">Secure Payment</h3>
+          <p class="why-desc">Your payment info is safe with 256-bit SSL encryption protection.</p>
+        </div>
+        <div class="why-card reveal reveal-delay-3">
+          <div class="why-icon">
+            <i data-lucide="award" class="w-8 h-8 text-white"></i>
+          </div>
+          <h3 class="why-title">Premium Quality</h3>
+          <p class="why-desc">Every product is carefully curated to ensure the highest quality standards.</p>
+        </div>
+        <div class="why-card reveal reveal-delay-4">
+          <div class="why-icon">
+            <i data-lucide="headphones" class="w-8 h-8 text-white"></i>
+          </div>
+          <h3 class="why-title">24/7 Support</h3>
+          <p class="why-desc">Our team is always ready to help you with any questions or issues.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FLASH SALE ============ -->
+  <section id="flash-sale" class="section-gray">
+    <div class="container">
+      <div class="flash-header reveal">
+        <div class="flash-header-text">
+          <span class="section-tag-accent badge-pulse">⚡ Flash Sale</span>
+          <h2 class="section-title">Deals of the Day</h2>
+          <p class="section-subtitle">Hurry up! These offers won't last long</p>
+        </div>
+        <div class="countdown">
+          <div class="countdown-box">
+            <p id="cd-hours" class="countdown-num">08</p>
+            <p class="countdown-label">Hours</p>
+          </div>
+          <div class="countdown-box">
+            <p id="cd-minutes" class="countdown-num">45</p>
+            <p class="countdown-label">Minutes</p>
+          </div>
+          <div class="countdown-box">
+            <p id="cd-seconds" class="countdown-num">30</p>
+            <p class="countdown-label">Seconds</p>
+          </div>
+        </div>
+      </div>
+      <div id="flashSaleGrid" class="products-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============ TESTIMONIALS ============ -->
+  <section id="testimonials" class="section-white">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">Testimonials</span>
+        <h2 class="section-title">What Our Customers Say</h2>
+        <p class="section-subtitle">Real reviews from real people who love Shopora</p>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card reveal reveal-delay-1">
+          <div class="stars">
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+          </div>
+          <p class="testimonial-text">"Absolutely love the quality of products! The sneakers I bought are incredibly comfortable and the shipping was super fast. Will definitely order again."</p>
+          <div class="testimonial-author">
+            <img src="https://picsum.photos/seed/person-sarah/100/100.jpg" alt="Sarah" class="testimonial-avatar">
+            <div>
+              <p class="testimonial-name">Sarah Johnson</p>
+              <p class="testimonial-role">Verified Buyer</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card reveal reveal-delay-2">
+          <div class="stars">
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+          </div>
+          <p class="testimonial-text">"Best online shopping experience I've ever had. The customer support team was very helpful when I had questions about sizing. Highly recommended!"</p>
+          <div class="testimonial-author">
+            <img src="https://picsum.photos/seed/person-mike/100/100.jpg" alt="Mike" class="testimonial-avatar">
+            <div>
+              <p class="testimonial-name">Mike Chen</p>
+              <p class="testimonial-role">Verified Buyer</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card reveal reveal-delay-3">
+          <div class="stars">
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-empty"></i>
+          </div>
+          <p class="testimonial-text">"The watch I ordered exceeded my expectations. Premium build quality at a reasonable price. The packaging was also very impressive and secure."</p>
+          <div class="testimonial-author">
+            <img src="https://picsum.photos/seed/person-emma/100/100.jpg" alt="Emma" class="testimonial-avatar">
+            <div>
+              <p class="testimonial-name">Emma Wilson</p>
+              <p class="testimonial-role">Verified Buyer</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card reveal reveal-delay-1">
+          <div class="stars">
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+          </div>
+          <p class="testimonial-text">"I've been shopping here for 6 months now and I'm always satisfied. The beauty products are authentic and the prices are competitive. Love the dark mode too!"</p>
+          <div class="testimonial-author">
+            <img src="https://picsum.photos/seed/person-lisa/100/100.jpg" alt="Lisa" class="testimonial-avatar">
+            <div>
+              <p class="testimonial-name">Lisa Park</p>
+              <p class="testimonial-role">Verified Buyer</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card reveal reveal-delay-2">
+          <div class="stars">
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-empty"></i>
+          </div>
+          <p class="testimonial-text">"Great selection of electronics! Got my wireless headphones and they arrived in perfect condition. The flash sale prices are unbeatable."</p>
+          <div class="testimonial-author">
+            <img src="https://picsum.photos/seed/person-david/100/100.jpg" alt="David" class="testimonial-avatar">
+            <div>
+              <p class="testimonial-name">David Martinez</p>
+              <p class="testimonial-role">Verified Buyer</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card reveal reveal-delay-3">
+          <div class="stars">
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+            <i data-lucide="star" class="w-4 h-4 star-filled"></i>
+          </div>
+          <p class="testimonial-text">"The leather bag I purchased is absolutely gorgeous. Looks even better in person than in the photos. Fast delivery and great packaging. 10/10!"</p>
+          <div class="testimonial-author">
+            <img src="https://picsum.photos/seed/person-anna/100/100.jpg" alt="Anna" class="testimonial-avatar">
+            <div>
+              <p class="testimonial-name">Anna Thompson</p>
+              <p class="testimonial-role">Verified Buyer</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEWSLETTER ============ -->
+  <section id="newsletter" class="section-white">
+    <div class="container">
+      <div class="newsletter-card reveal">
+        <div class="newsletter-deco-1"></div>
+        <div class="newsletter-deco-2"></div>
+        <div class="newsletter-inner">
+          <div class="newsletter-icon">
+            <i data-lucide="mail" class="w-8 h-8 text-white"></i>
+          </div>
+          <h2 class="newsletter-title">Stay in the Loop</h2>
+          <p class="newsletter-desc">Subscribe to our newsletter and get 15% off your first order, plus exclusive deals and updates.</p>
+          <form onsubmit="subscribeNewsletter(event)" class="newsletter-form">
+            <input type="email" id="newsletterEmail" placeholder="Enter your email address" required class="newsletter-input">
+            <button type="submit" class="newsletter-btn">
+              <i data-lucide="send" class="w-4 h-4"></i> Subscribe
+            </button>
+          </form>
+          <p class="newsletter-note">No spam. Unsubscribe anytime.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#home" class="navbar-logo mb-4">
+            <div class="logo-icon">
+              <i data-lucide="shopping-bag" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="font-display font-bold text-xl">Shopora</span>
+          </a>
+          <p class="footer-brand-desc">Your premium destination for fashion, electronics, beauty, and lifestyle products.</p>
+          <div class="footer-socials">
+            <a href="#" class="footer-social"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+            <a href="#" class="footer-social"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+            <a href="#" class="footer-social"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+            <a href="#" class="footer-social"><i data-lucide="youtube" class="w-4 h-4"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#categories">Categories</a></li>
+            <li><a href="#products">Products</a></li>
+            <li><a href="#flash-sale">Flash Sale</a></li>
+            <li><a href="#testimonials">Reviews</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">Support</h4>
+          <ul class="footer-links">
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">Returns</a></li>
+            <li><a href="#">Order Tracking</a></li>
+            <li><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">About</h4>
+          <ul class="footer-links">
+            <li><a href="#">Our Story</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">Contact</h4>
+          <ul class="footer-contact">
+            <li><i data-lucide="map-pin" class="w-4 h-4"></i> Jakarta, Indonesia</li>
+            <li><i data-lucide="phone" class="w-4 h-4"></i> +62 812 3456 7890</li>
+            <li><i data-lucide="mail" class="w-4 h-4"></i> hello@shopora.id</li>
+            <li><i data-lucide="clock" class="w-4 h-4"></i> Mon-Sun, 24/7</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-payments">
+        <p class="footer-payments-label">We accept:</p>
+        <div class="footer-payments-badges">
+          <span class="payment-badge">VISA</span>
+          <span class="payment-badge">MasterCard</span>
+          <span class="payment-badge">PayPal</span>
+          <span class="payment-badge">GCash</span>
+          <span class="payment-badge">OVO</span>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2025 Shopora. All rights reserved.</p>
+        <p class="footer-bottom-sub">Crafted with ❤️ for premium e-commerce</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ BACK TO TOP ============ -->
+  <button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="back-to-top">
+    <i data-lucide="arrow-up" class="w-5 h-5"></i>
+  </button>
+
+  <script src="assets/js/script.js"></script>
+</body>
+</html>
